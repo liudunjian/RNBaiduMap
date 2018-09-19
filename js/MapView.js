@@ -28,13 +28,15 @@ export default class MapView extends Component {
     onMapClick: PropTypes.func,
     onMapDoubleClick: PropTypes.func,
     onMarkerClick: PropTypes.func,
-    onMapPoiClick: PropTypes.func
+    onMapPoiClick: PropTypes.func,
+    showsUserLocation:PropTypes.bool
   };
 
   static defaultProps = {
     zoomControlsVisible: true,
     trafficEnabled: false,
     baiduHeatMapEnabled: false,
+    showsUserLocation:false,
     mapType: MapTypes.NORMAL,
     childrenPoints: [],
     marker: null,
@@ -48,6 +50,7 @@ export default class MapView extends Component {
   }
 
   _onChange(event) {
+    console.log("_onChange");
     if (typeof this.props[event.nativeEvent.type] === 'function') {
       this.props[event.nativeEvent.type](event.nativeEvent.params);
     }

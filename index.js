@@ -8,4 +8,5 @@ import _MapView from './js/MapView';
 export const  RNbaidumap  = NativeModules.RNAmbaidumap;
 export const MapTypes = _MapTypes;
 export const MapView = _MapView;
+export const LocationManager = NativeModules.RNLocManager;
 

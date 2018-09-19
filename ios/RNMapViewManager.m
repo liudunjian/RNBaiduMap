@@ -9,10 +9,13 @@
 #import "RNMapViewManager.h"
 
 @implementation RNMapViewManager
+
 RCT_EXPORT_MODULE(RNMapView)
 
 RCT_EXPORT_VIEW_PROPERTY(mapType, int)
 RCT_EXPORT_VIEW_PROPERTY(zoom, float)
+RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
+
 RCT_EXPORT_VIEW_PROPERTY(trafficEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(baiduHeatMapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(marker, NSDictionary*)
@@ -27,6 +30,17 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RNMapView) {
 +(void)initSDK:(NSString*)key {
     
     BMKMapManager* _mapManager = [[BMKMapManager alloc]init];
+    /**
+     百度地图SDK所有API均支持百度坐标（BD09）和国测局坐标（GCJ02），用此方法设置您使用的坐标类型.
+     默认是BD09（BMK_COORDTYPE_BD09LL）坐标.
+     如果需要使用GCJ02坐标，需要设置CoordinateType为：BMK_COORDTYPE_COMMON.
+     */
+    if ([BMKMapManager setCoordinateTypeUsedInBaiduMapSDK:BMK_COORDTYPE_BD09LL]) {
+        NSLog(@"经纬度类型设置成功");
+    } else {
+        NSLog(@"经纬度类型设置失败");
+    }
+    
     BOOL ret = [_mapManager start:key  generalDelegate:nil];
     if (!ret) {
         NSLog(@"manager start failed!");
@@ -36,9 +50,10 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RNMapView) {
 }
 
 - (UIView *)view {
-    RNMapView* mapView = [[RNMapView alloc] init];
-    mapView.delegate = self;
-    return mapView;
+    RNMapView* _mapView = [[RNMapView alloc] init];
+    _mapView.delegate = self;
+    //_mapView.showsUserLocation = YES;
+    return _mapView;
 }
 
 -(void)mapview:(BMKMapView *)mapView
@@ -72,7 +87,11 @@ onClickedMapBlank:(CLLocationCoordinate2D)coordinate {
                             @"type": @"onMapLoaded",
                             @"params": @{}
                             };
-    [self sendEvent:mapView params:event];
+    RNMapView *rnMap = mapView;
+    [self sendEvent:rnMap params:event];
+    
+    if(rnMap.showsUserLocation)
+        [rnMap startUpdatingLocation];
 }
 
 -(void)mapView:(BMKMapView *)mapView
@@ -129,13 +148,16 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
                                     @"overlook": @""
                                     }
                             };
-    [self sendEvent:mapView params:event];
+  // [self sendEvent:mapView params:event];
 }
 
+
 -(void)sendEvent:(RNMapView *) mapView params:(NSDictionary *) params {
+    NSLog(@"sendEvent:%@",params);
     if (!mapView.onChange) {
         return;
     }
     mapView.onChange(params);
 }
+
 @end

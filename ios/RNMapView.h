@@ -13,13 +13,16 @@
 #import <BaiduMapAPI_Map/BMKPinAnnotationView.h>
 #import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 #import <UIKit/UIKit.h>
+#import "RNLocManager.h"
 
-@interface RNMapView : BMKMapView <BMKMapViewDelegate>
+@interface RNMapView : BMKMapView
 
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange; //调用native端对应的属性。
+
 
 -(void)setZoom:(float)zoom;
 -(void)setCenterLatLng:(NSDictionary *)LatLngObj;
 -(void)setMarker:(NSDictionary *)Options;
+-(void) startUpdatingLocation;
 
 @end

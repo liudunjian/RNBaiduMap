@@ -10,6 +10,7 @@
 #import "RNMapView.h"
 
 
+
 @interface RNMapViewManager : RCTViewManager<BMKMapViewDelegate>
 
 +(void)initSDK:(NSString *)key;

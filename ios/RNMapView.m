@@ -8,11 +8,21 @@
 
 #import "RNMapView.h"
 
+@interface RNMapView() <BMKLocationManagerDelegate>
+@property (nonatomic, strong) BMKUserLocation *userLocation;
+@end
 
 @implementation RNMapView {
-    BMKMapView* _mapView;
     BMKPointAnnotation* _annotation;
     NSMutableArray* _annotations;
+    RNLocManager* _rnLocManager;
+}
+
+-(void) startUpdatingLocation {
+    if(!_rnLocManager) {
+      _rnLocManager = [[RNLocManager alloc]init];
+    }
+    [_rnLocManager startUpdatingLocation:self]; //开始定位
 }
 
 -(void)setZoom:(float)zoom {
@@ -32,8 +42,7 @@
         if(_annotation == nil) {
             _annotation = [[BMKPointAnnotation alloc]init];
             [self addMarker:_annotation option:option];
-        }
-        else {
+        }else {
             [self updateMarker:_annotation option:option];
         }
     }
@@ -79,7 +88,7 @@
         }
     }
 }
-
+//将Json格式的数据转化为百度坐标
 -(CLLocationCoordinate2D)getCoorFromMarkerOption:(NSDictionary *)option {
     double lat = [RCTConvert double:option[@"latitude"]];
     double lng = [RCTConvert double:option[@"longitude"]];
@@ -102,6 +111,43 @@
     }
     annotation.coordinate = coor;
     annotation.title = title;
+}
+
+//定位错误时回调
+- (void)BMKLocationManager:(BMKLocationManager * _Nonnull)manager didFailWithError:(NSError * _Nullable)error {
+    NSLog(@"ERROR IN MAP");
+}
+
+// 定位SDK中，方向变更的回调
+- (void)BMKLocationManager:(BMKLocationManager *)manager didUpdateHeading:(CLHeading *)heading {
+    NSLog(@"HEADING IN MAP");
+    if (!heading) {
+        return;
+    }
+}
+
+// 定位SDK中，位置变更的回调
+- (void)BMKLocationManager:(BMKLocationManager *)manager didUpdateLocation:(BMKLocation *)location orError:(NSError *)error {
+    NSLog(@"LOCATION IN MAP");
+    
+    if (error) {
+        NSLog(@"locError:{%ld - %@};", (long)error.code, error.localizedDescription);
+    }
+    if (!location) {
+        return;
+    }
+    self.userLocation.location = location.location;
+    NSLog(@"city:%@",location.rgcData.city);
+    //实现该方法，否则定位图标不出现
+    [self updateLocationData:self.userLocation];
+    self.centerCoordinate = self.userLocation.location.coordinate;
+}
+
+- (BMKUserLocation *)userLocation {
+    if (!_userLocation) {
+        _userLocation = [[BMKUserLocation alloc] init];
+    }
+    return _userLocation;
 }
 
 @end

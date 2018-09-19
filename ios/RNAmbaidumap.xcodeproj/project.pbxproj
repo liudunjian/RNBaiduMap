@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		230090A3214FA4BF004EFC50 /* RNLocManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 230090A2214FA4BF004EFC50 /* RNLocManager.m */; };
 		231DE54D214BD96E002AB1BC /* RNMapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 231DE547214BD96D002AB1BC /* RNMapViewManager.m */; };
 		231DE54E214BD96E002AB1BC /* RNMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 231DE548214BD96D002AB1BC /* RNMapView.m */; };
 		231DE54F214BD96E002AB1BC /* RNAmbaidumap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 231DE54B214BD96E002AB1BC /* RNAmbaidumap.mm */; };
@@ -26,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNAmbaidumap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAmbaidumap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		230090A1214FA4BF004EFC50 /* RNLocManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNLocManager.h; sourceTree = "<group>"; };
+		230090A2214FA4BF004EFC50 /* RNLocManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNLocManager.m; sourceTree = "<group>"; };
 		231DE547214BD96D002AB1BC /* RNMapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNMapViewManager.m; sourceTree = "<group>"; };
 		231DE548214BD96D002AB1BC /* RNMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNMapView.m; sourceTree = "<group>"; };
 		231DE549214BD96D002AB1BC /* RNMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNMapView.h; sourceTree = "<group>"; };
@@ -56,6 +59,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				230090A1214FA4BF004EFC50 /* RNLocManager.h */,
+				230090A2214FA4BF004EFC50 /* RNLocManager.m */,
 				231DE54C214BD96E002AB1BC /* RNAmbaidumap.h */,
 				231DE54B214BD96E002AB1BC /* RNAmbaidumap.mm */,
 				231DE549214BD96D002AB1BC /* RNMapView.h */,
@@ -124,6 +129,7 @@
 			files = (
 				231DE54D214BD96E002AB1BC /* RNMapViewManager.m in Sources */,
 				231DE54F214BD96E002AB1BC /* RNAmbaidumap.mm in Sources */,
+				230090A3214FA4BF004EFC50 /* RNLocManager.m in Sources */,
 				231DE54E214BD96E002AB1BC /* RNMapView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
