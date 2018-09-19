@@ -24,6 +24,7 @@ RCT_EXPORT_VIEW_PROPERTY(trafficEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(baiduHeatMapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(marker, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(markers, NSArray*)
+RCT_EXPORT_VIEW_PROPERTY(poiKeywords, NSArray<NSString*>*)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
@@ -56,7 +57,6 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RNMapView) {
 - (UIView *)view {
     RNMapView* _mapView = [[RNMapView alloc] init];
     _mapView.delegate = self;
-    //_mapView.showsUserLocation = YES;
     return _mapView;
 }
 

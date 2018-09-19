@@ -11,6 +11,7 @@
 
 @interface RNMapView() <BMKLocationManagerDelegate,BMKPoiSearchDelegate>
 @property (nonatomic, strong) BMKUserLocation *userLocation;
+@property (retain,nonatomic,strong) NSArray<NSString *> *poiKeywords;
 @end
 
 @implementation RNMapView {
@@ -87,6 +88,12 @@
         }
     }
 }
+
+-(void) setPoiKeywords:(NSArray<NSString*>*) poiKeyword {
+    _poiKeywords = poiKeyword;
+    [self searchNearbyPoi];
+}
+
 //将Json格式的数据转化为百度坐标
 -(CLLocationCoordinate2D)getCoorFromMarkerOption:(NSDictionary *)option {
     double lat = [RCTConvert double:option[@"latitude"]];
@@ -199,19 +206,12 @@
 }
 
 - (void)searchNearbyPoi {
-    //初始化请求参数类BMKNearbySearchOption的实例
-    BMKPOINearbySearchOption *option = [[BMKPOINearbySearchOption alloc]init];
-    
-    //检索关键字
-    option.keywords = [@"小吃" componentsSeparatedByString:@","];
-    
-    //检索的中心点
-    option.location = self.userLocation.location.coordinate;
     
     //初始化BMKPoiSearch实例
     BMKPoiSearch *poiSearch = [[BMKPoiSearch alloc] init];
     //设置POI检索的代理
     poiSearch.delegate = self;
+    
     //初始化请求参数类BMKNearbySearchOption的实例`
     BMKPOINearbySearchOption *nearbyOption = [[BMKPOINearbySearchOption alloc]init];
     /**
@@ -219,43 +219,45 @@
      在周边检索中关键字为数组类型，可以支持多个关键字并集检索，如银行和酒店。每个关键字对应数组一个元素。
      最多支持10个关键字。
      */
-    nearbyOption.keywords = option.keywords;
+    nearbyOption.keywords = self.poiKeywords; //componentsSeparatedByString:@","];
     //检索中心点的经纬度，必选
-    nearbyOption.location = option.location;
+    nearbyOption.location = self.userLocation.location.coordinate;
+    //单次召回POI数量，默认为10条记录，最大返回20条。
+    nearbyOption.pageSize = 20;
+    
     /**
      检索半径，单位是米。
      当半径过大，超过中心点所在城市边界时，会变为城市范围检索，检索范围为中心点所在城市
      */
-    nearbyOption.radius = option.radius;
+   // nearbyOption.radius = option.radius;
     /**
      检索分类，可选。
      该字段与keywords字段组合进行检索。
      支持多个分类，如美食和酒店。每个分类对应数组中一个元素
      */
-    nearbyOption.tags = option.tags;
+    //nearbyOption.tags = option.tags;
     /**
      是否严格限定召回结果在设置检索半径范围内。默认值为false。
      值为true代表检索结果严格限定在半径范围内；值为false时不严格限定。
      注意：值为true时会影响返回结果中total准确性及每页召回poi数量，我们会逐步解决此类问题。
      */
-    nearbyOption.isRadiusLimit = option.isRadiusLimit;
+    //nearbyOption.isRadiusLimit = option.isRadiusLimit;
     /**
      POI检索结果详细程度
      
      BMK_POI_SCOPE_BASIC_INFORMATION: 基本信息
      BMK_POI_SCOPE_DETAIL_INFORMATION: 详细信息
      */
-    nearbyOption.scope = option.scope;
+    //nearbyOption.scope = option.scope;
     //检索过滤条件，scope字段为BMK_POI_SCOPE_DETAIL_INFORMATION时，filter字段才有效
-    nearbyOption.filter = option.filter;
+    //nearbyOption.filter = option.filter;
     //分页页码，默认为0，0代表第一页，1代表第二页，以此类推
-    nearbyOption.pageIndex = option.pageIndex;
-    //单次召回POI数量，默认为10条记录，最大返回20条。
-    nearbyOption.pageSize = option.pageSize;
+    //nearbyOption.pageIndex = option.pageIndex;
+  
+    
     /**
      根据中心点、半径和检索词发起周边检索：异步方法，返回结果在BMKPoiSearchDelegate
      的onGetPoiResult里
-     
      nearbyOption 周边搜索的搜索参数类
      成功返回YES，否则返回NO
      */

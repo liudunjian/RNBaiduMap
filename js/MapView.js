@@ -21,6 +21,7 @@ export default class MapView extends Component {
     marker: PropTypes.object,
     markers: PropTypes.array,
     childrenPoints: PropTypes.array,
+    poiKeywords:PropTypes.array,
     onMapStatusChangeStart: PropTypes.func,
     onMapStatusChange: PropTypes.func,
     onMapStatusChangeFinish: PropTypes.func,
@@ -39,10 +40,11 @@ export default class MapView extends Component {
     showsUserLocation:false,
     mapType: MapTypes.NORMAL,
     childrenPoints: [],
+    poiKeywords:['小吃'],
     marker: null,
     markers: [],
     center: null,
-    zoom: 10
+    zoom: 16
   };
 
   constructor() {
