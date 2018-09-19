@@ -9,9 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RNMapView.h"
 
-
-
-@interface RNMapViewManager : RCTViewManager<BMKMapViewDelegate>
+@interface RNMapViewManager : RCTViewManager
 
 +(void)initSDK:(NSString *)key;
 

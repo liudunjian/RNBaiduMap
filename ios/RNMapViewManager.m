@@ -8,6 +8,10 @@
 
 #import "RNMapViewManager.h"
 
+@interface RNMapViewManager ()<BMKMapViewDelegate>
+
+@end
+
 @implementation RNMapViewManager
 
 RCT_EXPORT_MODULE(RNMapView)
@@ -55,6 +59,8 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RNMapView) {
     //_mapView.showsUserLocation = YES;
     return _mapView;
 }
+
+#pragma mark - BMKMapViewDelegate
 
 -(void)mapview:(BMKMapView *)mapView
  onDoubleClick:(CLLocationCoordinate2D)coordinate {
@@ -150,7 +156,6 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
                             };
   // [self sendEvent:mapView params:event];
 }
-
 
 -(void)sendEvent:(RNMapView *) mapView params:(NSDictionary *) params {
     NSLog(@"sendEvent:%@",params);

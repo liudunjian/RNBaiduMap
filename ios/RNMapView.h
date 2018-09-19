@@ -14,11 +14,11 @@
 #import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 #import <UIKit/UIKit.h>
 #import "RNLocManager.h"
+#import <BaiduMapAPI_Search/BMKSearchComponent.h>
 
 @interface RNMapView : BMKMapView
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange; //调用native端对应的属性。
-
 
 -(void)setZoom:(float)zoom;
 -(void)setCenterLatLng:(NSDictionary *)LatLngObj;
