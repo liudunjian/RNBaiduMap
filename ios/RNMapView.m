@@ -11,7 +11,9 @@
 
 @interface RNMapView() <BMKLocationManagerDelegate,BMKPoiSearchDelegate>
 @property (nonatomic, strong) BMKUserLocation *userLocation;
+@property (nonatomic,strong) BMKUserLocation *lastPoiUserLocation;
 @property (retain,nonatomic,strong) NSArray<NSString *> *poiKeywords;
+//@property (assign,nonatomic) NSInteger poiPageIndex;
 @end
 
 @implementation RNMapView {
@@ -28,6 +30,7 @@
 }
 
 -(void)setZoom:(float)zoom {
+    NSLog(@"zoom change");
     self.zoomLevel = zoom;
 }
 
@@ -91,7 +94,8 @@
 
 -(void) setPoiKeywords:(NSArray<NSString*>*) poiKeyword {
     _poiKeywords = poiKeyword;
-    [self searchNearbyPoi];
+    if(self.userLocation.location!=nil)
+        [self searchNearbyPoi];
 }
 
 //将Json格式的数据转化为百度坐标
@@ -149,7 +153,16 @@
     //实现该方法，否则定位图标不出现
     [self updateLocationData:self.userLocation];
     self.centerCoordinate = self.userLocation.location.coordinate;
-    [self searchNearbyPoi];
+    
+    //判断上次定位与本次定位距离，小于1000米不会重新进行poi检索
+    double distance = [self calculateDistance:self.userLocation from:self.lastPoiUserLocation];
+    NSLog(@"distance between two location is:%f",distance);
+
+    if(distance>=1000) {
+        NSLog(@"distance between two location is larger than 1000");
+        [self searchNearbyPoi];
+        self.lastPoiUserLocation.location = location.location;
+    }
 }
 
 
@@ -191,6 +204,9 @@
         //设置当前地图的中心点
         //BMKPointAnnotation *annotation = annotations[0];
         // self.centerCoordinate = annotation.coordinate;
+        
+        //需要将结果返回到JS端
+        
     }
     
     //POI信息类的实例
@@ -202,6 +218,8 @@
         BMKPOIDetailInfo *detailInfo = info.detailInfo;
         detailMessage = [NSString stringWithFormat:@"距离中心点的距离：%ld\n类型：%@\n标签：%@\n导航引导点坐标纬度：%f\n导航引导点坐标经度：%f\n详情页URL：%@\n商户的价格：%f\n营业时间：%@\n总体评分：%f\n口味评分：%f\n服务评分：%f\n环境评分：%f\n星级评分：%f\n卫生评分：%f\n技术评分：%f\n图片数目：%ld\n团购数目：%ld\n优惠数目：%ld\n评论数目：%ld\n收藏数目：%ld\n签到数目：%ld", detailInfo.distance, detailInfo.type, detailInfo.tag, detailInfo.naviLocation.latitude, detailInfo.naviLocation.longitude, detailInfo.detailURL, detailInfo.price, detailInfo.openingHours, detailInfo.overallRating, detailInfo.tasteRating, detailInfo.serviceRating, detailInfo.environmentRating, detailInfo.facilityRating, detailInfo.hygieneRating, detailInfo.technologyRating, detailInfo.imageNumber, detailInfo.grouponNumber, detailInfo.discountNumber, detailInfo.commentNumber, detailInfo.favoriteNumber, detailInfo.checkInNumber];
     }
+    NSLog(@"basicMessage:/n%@",basicMessage);
+    NSLog(@"detailMessage:/n%@",detailMessage);
    // [self alertMessage:[NSString stringWithFormat:@"%@%@", basicMessage, detailMessage]];
 }
 
@@ -224,36 +242,39 @@
     nearbyOption.location = self.userLocation.location.coordinate;
     //单次召回POI数量，默认为10条记录，最大返回20条。
     nearbyOption.pageSize = 20;
-    
-    /**
-     检索半径，单位是米。
-     当半径过大，超过中心点所在城市边界时，会变为城市范围检索，检索范围为中心点所在城市
-     */
-   // nearbyOption.radius = option.radius;
-    /**
-     检索分类，可选。
-     该字段与keywords字段组合进行检索。
-     支持多个分类，如美食和酒店。每个分类对应数组中一个元素
-     */
-    //nearbyOption.tags = option.tags;
-    /**
-     是否严格限定召回结果在设置检索半径范围内。默认值为false。
-     值为true代表检索结果严格限定在半径范围内；值为false时不严格限定。
-     注意：值为true时会影响返回结果中total准确性及每页召回poi数量，我们会逐步解决此类问题。
-     */
-    //nearbyOption.isRadiusLimit = option.isRadiusLimit;
     /**
      POI检索结果详细程度
      
      BMK_POI_SCOPE_BASIC_INFORMATION: 基本信息
      BMK_POI_SCOPE_DETAIL_INFORMATION: 详细信息
      */
-    //nearbyOption.scope = option.scope;
+    nearbyOption.scope = BMK_POI_SCOPE_DETAIL_INFORMATION;
+    
+    /**
+     检索半径，单位是米。
+     当半径过大，超过中心点所在城市边界时，会变为城市范围检索，检索范围为中心点所在城市
+     */
+     //nearbyOption.radius = 500;
+    
+    //分页页码，默认为0，0代表第一页，1代表第二页，以此类推
+     //nearbyOption.pageIndex = 0;
+    
+    /**
+     是否严格限定召回结果在设置检索半径范围内。默认值为false。
+     值为true代表检索结果严格限定在半径范围内；值为false时不严格限定。
+     注意：值为true时会影响返回结果中total准确性及每页召回poi数量，我们会逐步解决此类问题。
+     */
+     // nearbyOption.isRadiusLimit = true;
+    
+    /**
+     检索分类，可选。
+     该字段与keywords字段组合进行检索。
+     支持多个分类，如美食和酒店。每个分类对应数组中一个元素
+     */
+    //nearbyOption.tags = option.tags;
+  
     //检索过滤条件，scope字段为BMK_POI_SCOPE_DETAIL_INFORMATION时，filter字段才有效
     //nearbyOption.filter = option.filter;
-    //分页页码，默认为0，0代表第一页，1代表第二页，以此类推
-    //nearbyOption.pageIndex = option.pageIndex;
-  
     
     /**
      根据中心点、半径和检索词发起周边检索：异步方法，返回结果在BMKPoiSearchDelegate
@@ -274,6 +295,31 @@
         _userLocation = [[BMKUserLocation alloc] init];
     }
     return _userLocation;
+}
+
+-(BMKUserLocation*) lastPoiUserLocation {
+    if(!_lastPoiUserLocation) {
+        _lastPoiUserLocation = [[BMKUserLocation alloc]init];
+    }
+    
+    return _lastPoiUserLocation;
+}
+
+-(void)sendEvent:(NSDictionary *) params {
+    NSLog(@"sendEvent:%@",params);
+    if (!self.onChange) {
+        return;
+    }
+    self.onChange(params);
+}
+
+-(CLLocationDistance)calculateDistance:(BMKUserLocation*) curLoc from:(BMKUserLocation*) lastLoc {
+    if(curLoc.location==nil)
+        return 0;
+    if(lastLoc.location==nil)
+        return 1000;
+    CLLocationDistance distance = [curLoc.location distanceFromLocation:lastLoc.location];
+    return distance;
 }
 
 @end
