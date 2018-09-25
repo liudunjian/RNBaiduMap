@@ -30,7 +30,8 @@ export default class MapView extends Component {
     onMapDoubleClick: PropTypes.func,
     onMarkerClick: PropTypes.func,
     onMapPoiClick: PropTypes.func,
-    showsUserLocation:PropTypes.bool
+    showsUserLocation:PropTypes.bool,
+    onMapPoiUpdate:PropTypes.func,
   };
 
   static defaultProps = {
@@ -52,7 +53,7 @@ export default class MapView extends Component {
   }
 
   _onChange(event) {
-    console.log("_onChange");
+    console.log("_onChange:"+event);
     if (typeof this.props[event.nativeEvent.type] === 'function') {
       this.props[event.nativeEvent.type](event.nativeEvent.params);
     }

@@ -187,6 +187,7 @@
     
     //BMKSearchErrorCode错误码，BMK_SEARCH_NO_ERROR：检索结果正常返回
     if (error == BMK_SEARCH_NO_ERROR) {
+        NSMutableArray* dictionaries = [[NSMutableArray alloc]init];
         for (NSUInteger i = 0; i < poiResult.poiInfoList.count; i ++) {
             //POI信息类的实例
             BMKPoiInfo *POIInfo = poiResult.poiInfoList[i];
@@ -196,7 +197,24 @@
             annotation.coordinate = POIInfo.pt;
             //设置标注的标题
             annotation.title = POIInfo.name;
+            
             [_annotations addObject:annotation];
+            
+            NSMutableDictionary* dictionnary = [[NSMutableDictionary alloc]init];
+            [dictionnary setObject:POIInfo.name forKey:@"name"];
+            NSMutableString* address = [[NSMutableString alloc]initWithString:POIInfo.province];
+            [address appendString:POIInfo.city];
+            [address appendString:POIInfo.area];
+            [address appendString:POIInfo.address];
+            [dictionnary setObject:address forKey:@"address"];
+            if(POIInfo.hasDetailInfo) {
+                [dictionnary setObject:POIInfo.detailInfo.detailURL forKey:@"detailURL"];
+                [dictionnary setObject:POIInfo.detailInfo.tag forKey:@"tag"];
+            }else {
+                [dictionnary setObject:@"" forKey:@"detailURL"];
+                [dictionnary setObject:@"" forKey:@"tag"];
+            }
+            [dictionaries addObject:dictionnary];
         }
         //将一组标注添加到当前地图View中
         [self addAnnotations:_annotations];
@@ -204,9 +222,14 @@
         //设置当前地图的中心点
         //BMKPointAnnotation *annotation = annotations[0];
         // self.centerCoordinate = annotation.coordinate;
-        
         //需要将结果返回到JS端
-        
+    
+        NSDictionary* event = @{
+                                    @"type": @"onMapPoiUpdate",
+                                    @"params": dictionaries,
+                              };
+        [self sendEvent:event];
+
     }
     
     //POI信息类的实例
