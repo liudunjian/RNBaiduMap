@@ -213,10 +213,11 @@
             //设置标注的经纬度坐标
             annotation.coordinate = POIInfo.pt;
             //设置标注的标题
-            annotation.title = POIInfo.name;
+            NSLog(@"TITLE:%@",POIInfo.name);
             //设置携带的信息
             NSData *info=[NSJSONSerialization dataWithJSONObject:dictionnary options:NSJSONWritingPrettyPrinted error:nil];
             NSString *infoStr=[[NSString alloc]initWithData:info encoding:NSUTF8StringEncoding];
+            annotation.title = POIInfo.name;
             annotation.subtitle = infoStr;
             
             [_annotations addObject:annotation];

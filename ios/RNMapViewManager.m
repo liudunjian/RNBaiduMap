@@ -103,6 +103,8 @@ onClickedMapBlank:(CLLocationCoordinate2D)coordinate {
 -(void)mapView:(BMKMapView *)mapView
 didSelectAnnotationView:(BMKAnnotationView *)view {
     NSLog(@"subtitle:%@",[view annotation].subtitle);
+    NSLog(@"title:%@",[view annotation].title);
+    
     NSData *data = [[view annotation].subtitle dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *params = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     NSDictionary* event = @{
@@ -129,9 +131,37 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
 
 - (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id <BMKAnnotation>)annotation {
     if ([annotation isKindOfClass:[BMKPointAnnotation class]]) {
+        
         BMKPinAnnotationView *newAnnotationView = [[BMKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"myAnnotation"];
         newAnnotationView.pinColor = BMKPinAnnotationColorPurple;
         newAnnotationView.animatesDrop = YES;
+        
+        UIView *popView = [[UIView alloc]init];
+        popView.backgroundColor = [UIColor whiteColor];
+        [popView setAutoresizesSubviews:true];
+
+        UILabel *title = [[UILabel alloc]init];//initWithFrame:CGRectMake(0, 3, 100, 30)];
+        title.backgroundColor = [UIColor whiteColor];
+        title.center = popView.center;
+        title.numberOfLines = 2;
+        title.text = annotation.title;
+        title.font = [UIFont systemFontOfSize:14];
+        title.textColor = [UIColor blueColor];
+        title.textAlignment = NSTextAlignmentCenter;
+        title.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
+        CGSize lblSize = [title.text boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width - 20, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:14]} context:nil].size;
+        
+        title.frame = CGRectMake(0,3, lblSize.width, lblSize.height);
+
+    
+        [popView addSubview:title];
+        
+        
+        BMKActionPaopaoView *paopaoView = [[BMKActionPaopaoView alloc]initWithCustomView:popView];
+        
+        paopaoView.frame = CGRectMake(0, 0, 100, 60);
+        newAnnotationView.paopaoView = nil;
+        newAnnotationView.paopaoView = paopaoView;
         return newAnnotationView;
     }
     return nil;
