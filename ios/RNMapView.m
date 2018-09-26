@@ -189,17 +189,11 @@
     if (error == BMK_SEARCH_NO_ERROR) {
         NSMutableArray* dictionaries = [[NSMutableArray alloc]init];
         for (NSUInteger i = 0; i < poiResult.poiInfoList.count; i ++) {
+
             //POI信息类的实例
             BMKPoiInfo *POIInfo = poiResult.poiInfoList[i];
-            //初始化标注类BMKPointAnnotation的实例
-            BMKPointAnnotation *annotation = [[BMKPointAnnotation alloc]init];
-            //设置标注的经纬度坐标
-            annotation.coordinate = POIInfo.pt;
-            //设置标注的标题
-            annotation.title = POIInfo.name;
             
-            [_annotations addObject:annotation];
-            
+            //处理POI结果
             NSMutableDictionary* dictionnary = [[NSMutableDictionary alloc]init];
             [dictionnary setObject:POIInfo.name forKey:@"name"];
             NSMutableString* address = [[NSMutableString alloc]initWithString:POIInfo.province];
@@ -214,6 +208,19 @@
                 [dictionnary setObject:@"" forKey:@"detailURL"];
                 [dictionnary setObject:@"" forKey:@"tag"];
             }
+            //初始化标注类BMKPointAnnotation的实例
+            BMKPointAnnotation *annotation = [[BMKPointAnnotation alloc]init];
+            //设置标注的经纬度坐标
+            annotation.coordinate = POIInfo.pt;
+            //设置标注的标题
+            annotation.title = POIInfo.name;
+            //设置携带的信息
+            NSData *info=[NSJSONSerialization dataWithJSONObject:dictionnary options:NSJSONWritingPrettyPrinted error:nil];
+            NSString *infoStr=[[NSString alloc]initWithData:info encoding:NSUTF8StringEncoding];
+            annotation.subtitle = infoStr;
+            
+            [_annotations addObject:annotation];
+            
             [dictionaries addObject:dictionnary];
         }
         //将一组标注添加到当前地图View中
@@ -222,6 +229,7 @@
         //设置当前地图的中心点
         //BMKPointAnnotation *annotation = annotations[0];
         // self.centerCoordinate = annotation.coordinate;
+        
         //需要将结果返回到JS端
     
         NSDictionary* event = @{

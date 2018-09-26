@@ -102,15 +102,12 @@ onClickedMapBlank:(CLLocationCoordinate2D)coordinate {
 
 -(void)mapView:(BMKMapView *)mapView
 didSelectAnnotationView:(BMKAnnotationView *)view {
+    NSLog(@"subtitle:%@",[view annotation].subtitle);
+    NSData *data = [[view annotation].subtitle dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *params = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     NSDictionary* event = @{
                             @"type": @"onMarkerClick",
-                            @"params": @{
-                                    @"title": [[view annotation] title],
-                                    @"position": @{
-                                            @"latitude": @([[view annotation] coordinate].latitude),
-                                            @"longitude": @([[view annotation] coordinate].longitude)
-                                            }
-                                    }
+                            @"params": params
                             };
     [self sendEvent:mapView params:event];
 }
