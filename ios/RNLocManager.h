@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <BMKLocationkit/BMKLocationComponent.h>
-#import <React/RCTEventEmitter.h>
+#import <React/RCTEventDispatcher.h>
 
-@interface RNLocManager : RCTEventEmitter<RCTBridgeModule>
+@interface RNLocManager : NSObject<RCTBridgeModule>
 
 + (void) initSDK:(NSString*) key;
 

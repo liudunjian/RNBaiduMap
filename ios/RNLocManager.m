@@ -15,6 +15,8 @@
 
 @implementation RNLocManager
 
+@synthesize bridge = _bridge;
+
 //暴露Module
 RCT_EXPORT_MODULE();
 
@@ -28,32 +30,33 @@ RCT_EXPORT_MODULE();
  *  @return 是否成功添加单次定位Request
  */
 RCT_EXPORT_METHOD(requestLocationWithReGeocode) {
-    BMKLocationManager* locationManager = [[BMKLocationManager alloc]init];
-    //设置返回位置的坐标系类型
-    locationManager.coordinateType = BMKLocationCoordinateTypeBMK09LL;
-    //设置距离过滤参数
-    locationManager.distanceFilter = kCLDistanceFilterNone;
-    //设置预期精度参数
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    //设置应用位置类型
-    locationManager.activityType = CLActivityTypeAutomotiveNavigation;
-    //设置是否自动停止位置更新
-    locationManager.pausesLocationUpdatesAutomatically = NO;
-    //设置是否允许后台定位
-   // _locationManager.allowsBackgroundLocationUpdates = YES;
-    //设置位置获取超时时间
-    locationManager.locationTimeout = 10;
-    //设置获取地址信息超时时间
-    locationManager.reGeocodeTimeout = 10;
-    locationManager.delegate  = self;
+//    BMKLocationManager* locationManager = [[BMKLocationManager alloc]init];
+//    //设置返回位置的坐标系类型
+//    locationManager.coordinateType = BMKLocationCoordinateTypeBMK09LL;
+//    //设置距离过滤参数
+//    locationManager.distanceFilter = kCLDistanceFilterNone;
+//    //设置预期精度参数
+//    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+//    //设置应用位置类型
+//    locationManager.activityType = CLActivityTypeAutomotiveNavigation;
+//    //设置是否自动停止位置更新
+//    locationManager.pausesLocationUpdatesAutomatically = NO;
+//    //设置是否允许后台定位
+//   // _locationManager.allowsBackgroundLocationUpdates = YES;
+//    //设置位置获取超时时间
+//    locationManager.locationTimeout = 10;
+//    //设置获取地址信息超时时间
+//    locationManager.reGeocodeTimeout = 10;
+//    locationManager.delegate  = self;
     
-    bool ret =  [locationManager requestLocationWithReGeocode:YES withNetworkState:NO completionBlock:^(BMKLocation * _Nullable location, BMKLocationNetworkState state, NSError * _Nullable error) {
+    bool ret =  [self.locationManager requestLocationWithReGeocode:YES withNetworkState:NO completionBlock:^(BMKLocation * _Nullable location, BMKLocationNetworkState state, NSError * _Nullable error) {
         if (error)
         {
             NSLog(@"locError:{%ld - %@};", (long)error.code, error.localizedDescription);
         }
         if (location)
         {//得到定位信息
+            NSLog(@"定位");
             [self locationEventReminderReceived:location];
         }
         NSLog(@"netstate = %d",state);
@@ -72,6 +75,8 @@ RCT_EXPORT_METHOD(startUpdatingLocation:(id<BMKLocationManagerDelegate>) delegat
     }else{
         self.locationManager.delegate = delegate;
     }
+    [ self.locationManager setLocatingWithReGeocode:YES];
+    [ self.locationManager startUpdatingLocation];
 }
 
 /**
@@ -90,10 +95,8 @@ RCT_EXPORT_METHOD(stopAllLocation)
     return dispatch_get_main_queue();
 }
 
-//事件发送器
-- (NSArray<NSString *> *)supportedEvents
-{
-    return @[@"LocEventReminder"];
+-(void)sendEvent:(NSString *)name body:(NSDictionary *)body {
+    [self.bridge.eventDispatcher sendDeviceEventWithName:name body:body];
 }
 
 //授权定位
@@ -124,8 +127,8 @@ RCT_EXPORT_METHOD(stopAllLocation)
                                    // @"locationDescribe": location.rgcData.locationDescribe
                                    }
                            };
-    
-    [self sendEventWithName:@"LocEventReminder" body:locationEvent];
+  
+    [self sendEvent:@"locationEventReminderReceived" body:locationEvent];
 }
 
 //定位错误时回调
@@ -175,8 +178,7 @@ RCT_EXPORT_METHOD(stopAllLocation)
     _locationManager.locationTimeout = 10;
     //设置获取地址信息超时时间
     _locationManager.reGeocodeTimeout = 10;
-    [_locationManager setLocatingWithReGeocode:YES];
-    [_locationManager startUpdatingLocation];
+   
     return _locationManager;
 }
 
