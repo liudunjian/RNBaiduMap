@@ -201,7 +201,7 @@
             [address appendString:POIInfo.area];
             [address appendString:POIInfo.address];
             [dictionnary setObject:address forKey:@"address"];
-            if(POIInfo.hasDetailInfo) {
+            if(POIInfo.hasDetailInfo&&POIInfo.detailInfo.detailURL!=nil&&POIInfo.detailInfo.tag!=nil) {
                 [dictionnary setObject:POIInfo.detailInfo.detailURL forKey:@"detailURL"];
                 [dictionnary setObject:POIInfo.detailInfo.tag forKey:@"tag"];
             }else {
@@ -241,17 +241,17 @@
 
     }
     
-    //POI信息类的实例
-    BMKPoiInfo *info = poiResult.poiInfoList[0];
-    NSString *basicMessage = [NSString stringWithFormat:@"检索结果总数：%ld\n总页数：%ld\n当前页的结果数：%ld\n当前页的页数索引：%ld\n名称：%@\n纬度：%f\n经度：%f\n地址：%@\n电话：%@\nUID：%@\n省份：%@\n城市：%@\n行政区域：%@\n街景图ID：%@\n是否有详情信息：%d\n", poiResult.totalPOINum, poiResult.totalPageNum, poiResult.curPOINum, poiResult.curPageIndex, info.name, info.pt.latitude, info.pt.longitude, info.address, info.phone, info.UID, info.province, info.city, info.area, info.streetID, info.hasDetailInfo];
-    
-    NSString *detailMessage = @"";
-    if (info.hasDetailInfo) {
-        BMKPOIDetailInfo *detailInfo = info.detailInfo;
-        detailMessage = [NSString stringWithFormat:@"距离中心点的距离：%ld\n类型：%@\n标签：%@\n导航引导点坐标纬度：%f\n导航引导点坐标经度：%f\n详情页URL：%@\n商户的价格：%f\n营业时间：%@\n总体评分：%f\n口味评分：%f\n服务评分：%f\n环境评分：%f\n星级评分：%f\n卫生评分：%f\n技术评分：%f\n图片数目：%ld\n团购数目：%ld\n优惠数目：%ld\n评论数目：%ld\n收藏数目：%ld\n签到数目：%ld", detailInfo.distance, detailInfo.type, detailInfo.tag, detailInfo.naviLocation.latitude, detailInfo.naviLocation.longitude, detailInfo.detailURL, detailInfo.price, detailInfo.openingHours, detailInfo.overallRating, detailInfo.tasteRating, detailInfo.serviceRating, detailInfo.environmentRating, detailInfo.facilityRating, detailInfo.hygieneRating, detailInfo.technologyRating, detailInfo.imageNumber, detailInfo.grouponNumber, detailInfo.discountNumber, detailInfo.commentNumber, detailInfo.favoriteNumber, detailInfo.checkInNumber];
-    }
-    NSLog(@"basicMessage:/n%@",basicMessage);
-    NSLog(@"detailMessage:/n%@",detailMessage);
+    //打印POI信息类的实例
+//    BMKPoiInfo *info = poiResult.poiInfoList[0];
+//    NSString *basicMessage = [NSString stringWithFormat:@"检索结果总数：%ld\n总页数：%ld\n当前页的结果数：%ld\n当前页的页数索引：%ld\n名称：%@\n纬度：%f\n经度：%f\n地址：%@\n电话：%@\nUID：%@\n省份：%@\n城市：%@\n行政区域：%@\n街景图ID：%@\n是否有详情信息：%d\n", poiResult.totalPOINum, poiResult.totalPageNum, poiResult.curPOINum, poiResult.curPageIndex, info.name, info.pt.latitude, info.pt.longitude, info.address, info.phone, info.UID, info.province, info.city, info.area, info.streetID, info.hasDetailInfo];
+//
+//    NSString *detailMessage = @"";
+//    if (info.hasDetailInfo) {
+//        BMKPOIDetailInfo *detailInfo = info.detailInfo;
+//        detailMessage = [NSString stringWithFormat:@"距离中心点的距离：%ld\n类型：%@\n标签：%@\n导航引导点坐标纬度：%f\n导航引导点坐标经度：%f\n详情页URL：%@\n商户的价格：%f\n营业时间：%@\n总体评分：%f\n口味评分：%f\n服务评分：%f\n环境评分：%f\n星级评分：%f\n卫生评分：%f\n技术评分：%f\n图片数目：%ld\n团购数目：%ld\n优惠数目：%ld\n评论数目：%ld\n收藏数目：%ld\n签到数目：%ld", detailInfo.distance, detailInfo.type, detailInfo.tag, detailInfo.naviLocation.latitude, detailInfo.naviLocation.longitude, detailInfo.detailURL, detailInfo.price, detailInfo.openingHours, detailInfo.overallRating, detailInfo.tasteRating, detailInfo.serviceRating, detailInfo.environmentRating, detailInfo.facilityRating, detailInfo.hygieneRating, detailInfo.technologyRating, detailInfo.imageNumber, detailInfo.grouponNumber, detailInfo.discountNumber, detailInfo.commentNumber, detailInfo.favoriteNumber, detailInfo.checkInNumber];
+//    }
+//    NSLog(@"basicMessage:/n%@",basicMessage);
+//    NSLog(@"detailMessage:/n%@",detailMessage);
    // [self alertMessage:[NSString stringWithFormat:@"%@%@", basicMessage, detailMessage]];
 }
 

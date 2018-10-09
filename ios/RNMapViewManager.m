@@ -105,8 +105,12 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     NSLog(@"subtitle:%@",[view annotation].subtitle);
     NSLog(@"title:%@",[view annotation].title);
     
-    NSData *data = [[view annotation].subtitle dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *params = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    NSDictionary *params = @{};
+    if([view annotation].subtitle!=nil) {
+       NSData * data = [[view annotation].subtitle dataUsingEncoding:NSUTF8StringEncoding];
+       params = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    }
+    
     NSDictionary* event = @{
                             @"type": @"onMarkerClick",
                             @"params": params
